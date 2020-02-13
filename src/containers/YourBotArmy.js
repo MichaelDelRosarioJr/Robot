@@ -16,7 +16,9 @@ class YourBotArmy extends React.Component {
 									      key ={bot.id}
                         clickBots = {this.props.removeBots}/>})
                         }
+              
           </div>
+          <button onClick = {(event) => this.props.goToBattleClick(event)}>Go to Battle</button>
         </div>
       </div>
     );

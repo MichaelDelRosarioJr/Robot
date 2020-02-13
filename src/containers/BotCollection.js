@@ -19,7 +19,7 @@ class BotCollection extends React.Component {
 				  return <BotCard 
 				  					bot = {bot} 
 									key ={bot.id} 
-									clickBots = {this.props.addBots}/>
+									clickBots = {this.props.selectBot}/>
 			  })}
 
     		</div>
