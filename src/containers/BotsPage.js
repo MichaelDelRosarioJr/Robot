@@ -1,72 +1,95 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 import BotCollection from '../containers/BotCollection'
 import YourBotArmy from '../containers/YourBotArmy'
 import BotSpecs from '../components/BotSpecs'
 
-class BotsPage extends React.Component {
+function BotsPage() {
   //start here with your code for step one
+  // React.Component version
+  // constructor() {
+  //   super()
 
-  constructor() {
-    super()
+  //   this.state = {
+  //     bots: [],
+  //     selectedBots: [],
+  //     robotSelected: null
+  //   }
+  // }
 
-    this.state = {
-      bots: [],
-      selectedBots: [],
-      robotSelected: null
-    }
-  }
+  // componentDidMount() {
+  //   //Get Robots
+  //   fetch('https://bot-battler-api.herokuapp.com/api/v1/bots')
+  //   .then(resp => resp.json())
+  //   .then((botsArray) => { 
+  //     this.setState({ 
+  //       bots: botsArray
+  //     })
+  //     //console.log(this.state.bots) 
+  //     return "Completed"}
+  //   )}
 
-  render() {
-    return (
-      <div>
-        {/* put your components here */}
-        <YourBotArmy selectedBots = {this.state.selectedBots} 
-        removeBots = {this.removeBots} 
-        goToBattleClick = {this.goToBattleClick}/>
-        {this.state.robotSelected === null ? <BotCollection bots = {this.state.bots} selectBot={this.selectBot}/> 
-            : <BotSpecs bot = {this.state.robotSelected} deselectBot = {this.deselectBot} addBots ={this.addBots}/>}
-        
-      </div>
-    );
-  }
+  
+  const [bots, setBots] = useState([])
+  const [selectedBots, setSelectedBots] = useState([])
+  const [robotSelected, setRobotSelect] = useState(null)
 
-  //This functions adds a robot to robotSeletected state and will display the BotSpecs form
-  selectBot = (bot) => {
-    console.log("Add Robot", bot.name)
+  useEffect( () => {
+    //Get Robots
+    fetch('https://bot-battler-api.herokuapp.com/api/v1/bots')
+    .then(resp => resp.json())
+    .then((botsArray) => { 
+      setBots(botsArray)
+      return "Completed"}
+    )}
+    ,[])
+  
+    //This functions adds a robot to robotSeletected state and will display the BotSpecs form
+  const selectBot = (bot) => {
+    // console.log("Add Robot", bot.name)
 
-    this.setState({
-      robotSelected: bot
-    })
+    setRobotSelect(bot)
+
+    // this.setState({
+    //   robotSelected: bot
+    // })
   }
 
   //Clear the selected robot and return to the BotCollection forms
-  deselectBot = (event) => {
+  const deselectBot = (event) => {
     event.preventDefault()
-    this.setState({
-      robotSelected: null
-    })
+
+    setRobotSelect(null)
+
+    // this.setState({
+    //   robotSelected: null
+    // })
 
     console.log("Pick me... =(")
   }
 
   //Add the selected robot to the YourBotArmy form and selectedBots array
-  addBots = (event, bot) => {
+  const addBots = (event, bot) => {
     //console.log(id)
     event.preventDefault()
 
     //Player can only select up to 5 robots
-    if (this.selectedBots !== null && this.state.selectedBots.length > 4)
+    if (selectedBots !== null && selectedBots.length > 4)
     {
       return
     }
       else {
-            if(this.state.selectedBots.includes(bot))
+        if(selectedBots.includes(bot))
           return
-        this.setState({
-          bots: this.state.bots.filter(thisBot => thisBot.id !== bot.id),
-          selectedBots: this.state.selectedBots.concat(bot),
-          robotSelected: null
-        })
+
+        setBots(bots.filter(thisBot => thisBot.id !== bot.id))
+        setSelectedBots(selectedBots.concat(bot))
+        setRobotSelect(null)
+
+        // this.setState({
+        //   bots: this.state.bots.filter(thisBot => thisBot.id !== bot.id),
+        //   selectedBots: this.state.selectedBots.concat(bot),
+        //   robotSelected: null
+        // })
         //TEST: Print robot length
         // console.log(this.state.selectedBots.length)
       }
@@ -74,38 +97,43 @@ class BotsPage extends React.Component {
   }
 
   //Remove the robot from selectedBots array and display robot on BotCollection form
-  removeBots = (removeBot) => {
+  const removeBots = (removeBot) => {
 
-    this.setState({
-      bots: this.state.bots.concat(removeBot),
-      selectedBots: this.state.selectedBots.filter(bot => bot.id !== removeBot.id)
-      })
+    setBots(bots.concat(removeBot))
+    setSelectedBots(selectedBots.filter(bot => bot.id !== removeBot.id))
+
+    // this.setState({
+    //   bots: this.state.bots.concat(removeBot),
+    //   selectedBots: this.state.selectedBots.filter(bot => bot.id !== removeBot.id)
+    //   })
   }
 
   //Go to battle when there are 5 robots in the player's army
-  goToBattleClick = (event) => {
+  const goToBattleClick = (event) => {
     event.preventDefault()
 
     //Go to battle if robot army is at 5
-    if (this.state.selectedBots.length === 5) {
+    if (selectedBots.length === 5) {
       console.log("To Battle!")
     }
     else {
-      console.log('We need more robots!', this.state.selectedBots.length)
+      console.log('We need more robots!', selectedBots.length)
     }
   }
 
-  componentDidMount() {
-    //Get Robots
-    fetch('https://bot-battler-api.herokuapp.com/api/v1/bots')
-    .then(resp => resp.json())
-    .then((botsArray) => { 
-      this.setState({ 
-        bots: botsArray
-      })
-      //console.log(this.state.bots) 
-      return "Completed"}
-    )}
+  return (
+    <div>
+      {/* put your components here */}
+      <YourBotArmy selectedBots = {selectedBots} 
+      removeBots = {removeBots} 
+      goToBattleClick = {goToBattleClick}/>
+      {robotSelected === null ? <BotCollection bots = {bots} selectBot={selectBot}/> 
+          : <BotSpecs bot = {robotSelected} deselectBot = {deselectBot} addBots ={addBots}/>}
+      
+    </div>
+  );
+
+  
 }
 
 export default BotsPage;
